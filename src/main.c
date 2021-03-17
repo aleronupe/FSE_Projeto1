@@ -2,6 +2,7 @@
 #include <unistd.h>         //Used for UART
 #include <fcntl.h>          //Used for UART
 #include <termios.h>        //Used for UART
+#include <string.h>
 #include "../inc/crc16.h"
 
 void monta_options_uart(int uart0_filestream){
@@ -28,13 +29,14 @@ int main(int argc, const char * argv[]) {
 
     unsigned char msg_TI[20] = {0x01, 0x23, 0xC1, 0x0, 0x8, 0x4, 0x0};
     short crc_TI = calcula_CRC(msg_TI, 7);
-    memcpy(&msg_TI[7], crc_TI, 2);
-    print("%s\n", msg_TI);
+    printf("%d\n", crc_TI);
+    memcpy(&msg_TI[7], (const void *) &crc_TI, 2);
+    printf("%s\n", msg_TI);
 
     unsigned char msg_TP[20] = {0x01, 0x23, 0xC2, 0x0, 0x8, 0x4, 0x0};
     short crc_TP = calcula_CRC(msg_TP, 7);
-    memcpy(&msg_TP[7], crc_TP, 2);
-    print("%s\n", msg_TP);
+    memcpy(&msg_TP[7], (const void *) &crc_TP, 2);
+    printf("%s\n", msg_TP);
     
     // if (uart0_filestream != -1)
     // {
