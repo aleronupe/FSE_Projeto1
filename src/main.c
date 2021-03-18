@@ -135,7 +135,7 @@ int main(int argc, const char *argv[])
         exit(1);
     }
 
-    print("temperatura ambiente na main: %lf\n", temp_ambiente);
+    printf("temperatura ambiente na main: %lf\n", temp_ambiente);
 
     close(id.fd);
 
@@ -267,7 +267,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev, double *temp_amb)
     req_delay = bme280_cal_meas_delay(&dev->settings);
 
     /* Continuously stream sensor data */
-    while (1)
+    int count = 5;
+    while (count > 0)
     {
         /* Set the sensor to forced mode */
         rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
@@ -288,8 +289,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev, double *temp_amb)
             break;
         }
         *temp_amb = comp_data.temperature;
-        print("temperatura ambiente na função: %lf\n", *temp_amb);
-        // print_sensor_data(&comp_data);
+        printf("temperatura ambiente na função: %lf\n", *temp_amb);
+        print_sensor_data(&comp_data);
+    	count--;
     }
 
     return rslt;
