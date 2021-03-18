@@ -16,7 +16,7 @@ struct identifier
     int8_t fd;        //Variable that contains file descriptor
 };
 
-void monta_options_uart(int uart0_filestream)
+void monta_uart(int uart0_filestream)
 {
     struct termios options;
     options.c_cflag = B9600 | CS8 | CLOCAL | CREAD; //<Set baud rate
@@ -28,8 +28,53 @@ void monta_options_uart(int uart0_filestream)
     tcsetattr(uart0_filestream, TCSANOW, &options);
 }
 
-void monta_options_i2c()
+void monta_i2c(struct bme280_dev *dev, struct identifier *id)
 {
+    /* Make sure to select BME280_I2C_ADDR_PRIM or BME280_I2C_ADDR_SEC as needed */
+    id->dev_addr = BME280_I2C_ADDR_PRIM; 
+    dev->intf = BME280_I2C_INTF;
+    dev->read = user_i2c_read;
+    dev->write = user_i2c_write;
+    dev->delay_us = user_delay_us;
+}
+
+void abre_i2c(struct bme280_dev *dev, struct identifier *id)
+{
+    if ((id->fd = open("/dev/i2c-1", O_RDWR)) < 0)
+    {
+        fprintf(stderr, "Failed to open the i2c bus %s\n", "/dev/i2c-1");
+        exit(1);
+    }
+
+    if (ioctl(id->fd, I2C_SLAVE, id->dev_addr) < 0)
+    {
+        fprintf(stderr, "Failed to acquire bus access and/or talk to slave.\n");
+        exit(1);
+    }
+
+    /* Update interface pointer with the structure that contains both device address and file descriptor */
+    dev->intf_ptr = id; 
+}
+
+void le_temp_i2c(struct bme280_dev *dev, double *temp_amb)
+{
+    /* Variable to define the result */
+    int8_t rslt = BME280_OK; 
+    /* Initialize the bme280 */
+    rslt = bme280_init(dev); 
+    
+    if (rslt != BME280_OK)
+    {
+        fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
+        exit(1);
+    }
+
+    rslt = stream_sensor_data_forced_mode(dev, temp_amb);
+    if (rslt != BME280_OK)
+    {
+        fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
+        exit(1);
+    }
 }
 
 void user_delay_us(uint32_t period, void *intf_ptr);
@@ -51,7 +96,7 @@ int main(int argc, const char *argv[])
     if (uart0_filestream == -1)
         printf("Erro - Não foi possível iniciar a UART.\n");
 
-    monta_options_uart(uart0_filestream);
+    monta_uart(uart0_filestream);
 
     unsigned char msg_TI[20] = {0x01, 0x23, 0xC1, 0x0, 0x8, 0x4, 0x0};
     short crc_TI = calcula_CRC(msg_TI, 7);
@@ -98,43 +143,8 @@ int main(int argc, const char *argv[])
     struct bme280_dev dev;
     struct identifier id;
 
-    int8_t rslt = BME280_OK; // Variable to define the result
-
-    id.dev_addr = BME280_I2C_ADDR_PRIM; // Make sure to select BME280_I2C_ADDR_PRIM or BME280_I2C_ADDR_SEC as needed
-
-    dev.intf = BME280_I2C_INTF;
-    dev.read = user_i2c_read;
-    dev.write = user_i2c_write;
-    dev.delay_us = user_delay_us;
-
-    if ((id.fd = open("/dev/i2c-1", O_RDWR)) < 0)
-    {
-        fprintf(stderr, "Failed to open the i2c bus %s\n", "/dev/i2c-1");
-        exit(1);
-    }
-
-    if (ioctl(id.fd, I2C_SLAVE, id.dev_addr) < 0)
-    {
-        fprintf(stderr, "Failed to acquire bus access and/or talk to slave.\n");
-        exit(1);
-    }
-
-    dev.intf_ptr = &id; // Update interface pointer with the structure that contains both device address and file descriptor
-
-    rslt = bme280_init(&dev); // Initialize the bme280
-    if (rslt != BME280_OK)
-    {
-        fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
-        exit(1);
-    }
-
-    rslt = stream_sensor_data_forced_mode(&dev, &temp_ambiente);
-    if (rslt != BME280_OK)
-    {
-        fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
-        exit(1);
-    }
-
+    monta_i2c(&dev, &id);
+    abre_i2c(&dev, &id);
     printf("temperatura ambiente na main: %lf\n", temp_ambiente);
 
     close(id.fd);
@@ -291,7 +301,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev, double *temp_amb)
         *temp_amb = comp_data.temperature;
         printf("temperatura ambiente na função: %lf\n", *temp_amb);
         print_sensor_data(&comp_data);
-    	count--;
+        count--;
     }
 
     return rslt;
