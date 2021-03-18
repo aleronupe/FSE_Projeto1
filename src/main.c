@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
         if (rx_length > 0)
         {
             rx_buffer[rx_length] = '\0';
-            printf("%i Bytes lidos : [%us]\n", rx_length, rx_buffer);
+            printf("%i Bytes lidos : [%s]\n", rx_length, rx_buffer);
             short crc_calc, crc_rec;
 
             memcpy(&crc_rec, &rx_buffer[7], 2);
