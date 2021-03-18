@@ -5,6 +5,7 @@
 #include <string.h>
 #include <linux/i2c-dev.h> //Used for I2C
 #include <sys/ioctl.h>     //Used for I2C
+#include <stdlib.h>
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 
@@ -72,8 +73,6 @@ int main(int argc, const char *argv[])
         memcpy(&temp_TI, &rx_buffer[3], 4);
         if (rx_length > 0)
         {
-            //rx_buffer[rx_length] = '\0';
-            printf("%i Bytes lidos : [%s]\n", rx_length, rx_buffer);
             short crc_calc, crc_rec;
 
             memcpy(&crc_rec, &rx_buffer[7], 2);
@@ -101,6 +100,16 @@ int main(int argc, const char *argv[])
     dev.write = user_i2c_write;
     dev.delay_us = user_delay_us;
 
+    if ((id.fd = open("/dev/i2c-1", O_RDWR)) < 0)
+    {
+        fprintf(stderr, "Failed to open the i2c bus %s\n", "/dev/i2c-1");
+        exit(1);
+    }
+
+    printf("id.fd: [%d]\n", id.fd);
+    printf("I2C_SLAVE: [%d]\n", I2C_SLAVE);
+    printf("id.dev_addr: [%d]\n", id.dev_addr);
+
     if (ioctl(id.fd, I2C_SLAVE, id.dev_addr) < 0)
     {
         fprintf(stderr, "Failed to acquire bus access and/or talk to slave.\n");
@@ -121,16 +130,6 @@ int main(int argc, const char *argv[])
     {
         fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
         exit(1);
-    }
-
-    uint8_t leitura[20];
-    rslt = dev.read(0x76, &leitura[0], 10, &dev.intf_ptr);
-    if (rslt != BME280_OK)
-    {
-        fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
-        exit(1);
-    } else {
-        printf("O que foi lido: %s", leitura);
     }
 
     return 0;
@@ -202,22 +201,22 @@ void print_sensor_data(struct bme280_data *comp_data)
 {
     float temp, press, hum;
 
-#ifdef BME280_FLOAT_ENABLE
-    temp = comp_data->temperature;
-    press = 0.01 * comp_data->pressure;
-    hum = comp_data->humidity;
-#else
-#ifdef BME280_64BIT_ENABLE
-    temp = 0.01f * comp_data->temperature;
-    press = 0.0001f * comp_data->pressure;
-    hum = 1.0f / 1024.0f * comp_data->humidity;
-#else
-    temp = 0.01f * comp_data->temperature;
-    press = 0.01f * comp_data->pressure;
-    hum = 1.0f / 1024.0f * comp_data->humidity;
-#endif
-#endif
-    printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
+    #ifdef BME280_FLOAT_ENABLE
+        temp = comp_data->temperature;
+        press = 0.01 * comp_data->pressure;
+        hum = comp_data->humidity;
+    #else
+    #ifdef BME280_64BIT_ENABLE
+        temp = 0.01f * comp_data->temperature;
+        press = 0.0001f * comp_data->pressure;
+        hum = 1.0f / 1024.0f * comp_data->humidity;
+    #else
+        temp = 0.01f * comp_data->temperature;
+        press = 0.01f * comp_data->pressure;
+        hum = 1.0f / 1024.0f * comp_data->humidity;
+    #endif
+    #endif
+        printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
 }
 
 /*!
@@ -273,7 +272,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
 
         /* Wait for the measurement to complete and print data */
         dev->delay_us(req_delay, dev->intf_ptr);
+        usleep(100000);
         rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
+        // sleep(1);
         if (rslt != BME280_OK)
         {
             fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
