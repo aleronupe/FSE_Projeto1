@@ -92,7 +92,7 @@ int main(int argc, const char *argv[])
         memcpy(&temp_TI, &rx_buffer[3], 4);
         if (rx_length > 0)
         {
-            rx_buffer[rx_length] = '\0';
+            //rx_buffer[rx_length] = '\0';
             printf("%i Bytes lidos : [%s]\n", rx_length, rx_buffer);
             short crc_calc, crc_rec;
 
