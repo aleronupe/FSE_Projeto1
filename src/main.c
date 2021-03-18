@@ -28,6 +28,10 @@ void monta_options_uart(int uart0_filestream)
     tcsetattr(uart0_filestream, TCSANOW, &options);
 }
 
+void monta_options_i2c()
+{
+}
+
 void user_delay_us(uint32_t period, void *intf_ptr);
 
 void print_sensor_data(struct bme280_data *comp_data);
@@ -36,7 +40,7 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_p
 
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 
-int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
+int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev, double *temp_amb);
 
 int main(int argc, const char *argv[])
 {
@@ -88,12 +92,15 @@ int main(int argc, const char *argv[])
     close(uart0_filestream);
 
     ////////////////////// I2C ///////////////////
+
+    double temp_ambiente;
+
     struct bme280_dev dev;
     struct identifier id;
 
     int8_t rslt = BME280_OK; // Variable to define the result
 
-    id.dev_addr = BME280_I2C_ADDR_PRIM; // Make sure to select BME280_I2C_ADDR_PRIM or BME280_I2C_ADDR_SEC as needed 
+    id.dev_addr = BME280_I2C_ADDR_PRIM; // Make sure to select BME280_I2C_ADDR_PRIM or BME280_I2C_ADDR_SEC as needed
 
     dev.intf = BME280_I2C_INTF;
     dev.read = user_i2c_read;
@@ -106,10 +113,6 @@ int main(int argc, const char *argv[])
         exit(1);
     }
 
-    printf("id.fd: [%d]\n", id.fd);
-    printf("I2C_SLAVE: [%d]\n", I2C_SLAVE);
-    printf("id.dev_addr: [%d]\n", id.dev_addr);
-
     if (ioctl(id.fd, I2C_SLAVE, id.dev_addr) < 0)
     {
         fprintf(stderr, "Failed to acquire bus access and/or talk to slave.\n");
@@ -118,19 +121,23 @@ int main(int argc, const char *argv[])
 
     dev.intf_ptr = &id; // Update interface pointer with the structure that contains both device address and file descriptor
 
-    rslt = bme280_init(&dev); // Initialize the bme280 
+    rslt = bme280_init(&dev); // Initialize the bme280
     if (rslt != BME280_OK)
     {
         fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
         exit(1);
     }
 
-    rslt = stream_sensor_data_forced_mode(&dev);
+    rslt = stream_sensor_data_forced_mode(&dev, &temp_ambiente);
     if (rslt != BME280_OK)
     {
         fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
         exit(1);
     }
+
+    print("temperatura ambiente na main: %lf\n", temp_ambiente);
+
+    close(id.fd);
 
     return 0;
 }
@@ -201,28 +208,28 @@ void print_sensor_data(struct bme280_data *comp_data)
 {
     float temp, press, hum;
 
-    #ifdef BME280_FLOAT_ENABLE
-        temp = comp_data->temperature;
-        press = 0.01 * comp_data->pressure;
-        hum = comp_data->humidity;
-    #else
-    #ifdef BME280_64BIT_ENABLE
-        temp = 0.01f * comp_data->temperature;
-        press = 0.0001f * comp_data->pressure;
-        hum = 1.0f / 1024.0f * comp_data->humidity;
-    #else
-        temp = 0.01f * comp_data->temperature;
-        press = 0.01f * comp_data->pressure;
-        hum = 1.0f / 1024.0f * comp_data->humidity;
-    #endif
-    #endif
-        printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
+#ifdef BME280_FLOAT_ENABLE
+    temp = comp_data->temperature;
+    press = 0.01 * comp_data->pressure;
+    hum = comp_data->humidity;
+#else
+#ifdef BME280_64BIT_ENABLE
+    temp = 0.01f * comp_data->temperature;
+    press = 0.0001f * comp_data->pressure;
+    hum = 1.0f / 1024.0f * comp_data->humidity;
+#else
+    temp = 0.01f * comp_data->temperature;
+    press = 0.01f * comp_data->pressure;
+    hum = 1.0f / 1024.0f * comp_data->humidity;
+#endif
+#endif
+    printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
 }
 
 /*!
  * @brief This API reads the sensor temperature, pressure and humidity data in forced mode.
  */
-int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
+int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev, double *temp_amb)
 {
     /* Variable to define the result */
     int8_t rslt = BME280_OK;
@@ -280,8 +287,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
             fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
             break;
         }
-
-        print_sensor_data(&comp_data);
+        *temp_amb = comp_data.temperature;
+        print("temperatura ambiente na função: %lf\n", *temp_amb);
+        // print_sensor_data(&comp_data);
     }
 
     return rslt;
