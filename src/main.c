@@ -54,14 +54,14 @@ int main(int argc, const char *argv[])
         if (rx_length > 0)
         {
             rx_buffer[rx_length] = '\0';
-            printf("%i Bytes lidos : [%s]\n", rx_length, rx_buffer);
-            unsigned char aux[20];
-            short pre_crc, obtained;
-            memcpy(&aux[0], (const void *)&rx_buffer[0], 7);
-            memcpy(&pre_crc, &rx_buffer[7], 2);
-            printf("crc recebido: %d\n", pre_crc);
-            obtained = calcula_CRC(aux, 7);
-            printf("crc calculado: %d\n", obtained);
+            printf("%i Bytes lidos : [%us]\n", rx_length, rx_buffer);
+            short crc_calc, crc_rec;
+
+            memcpy(&crc_rec, &rx_buffer[7], 2);
+            printf("crc recebido: %d\n", crc_rec);
+
+            crc_calc = calcula_CRC(rx_buffer, 7);
+            printf("crc calculado: %d\n", crc_calc);
         }
     }
     close(uart0_filestream);
