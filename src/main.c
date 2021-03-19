@@ -36,7 +36,7 @@ int confere_crc(unsigned char *rx_buffer, int rx_length)
     {
         short crc_calc, crc_rec;
 
-        memcpy(&crc_rec, rx_buffer[7], 2);
+        memcpy(&crc_rec, (const void *)rx_buffer, 2);
         printf("crc recebido: %d\n", crc_rec);
 
         crc_calc = calcula_CRC(rx_buffer, 7);
