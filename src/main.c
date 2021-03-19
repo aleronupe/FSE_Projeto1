@@ -100,10 +100,13 @@ int main(int argc, const char *argv[])
 
     struct bme280_dev dev;
     struct identifier id;
+    // int8_t rslt = BME280_OK;
 
     monta_i2c(&dev, &id);
     abre_i2c(&dev, &id);
-    le_temp_i2c(&dev, &temp_amb);
+    inicializa_bme280_i2c(&dev);
+    configura_bme280_i2c(&dev);
+    le_temp_bme280_i2c(&dev, &temp_amb);
     printf("temperatura Ambiente na main: %lf\n", temp_amb);
     printf("Agora com módulos :)\n");
 

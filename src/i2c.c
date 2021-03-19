@@ -95,77 +95,6 @@ void print_sensor_data(struct bme280_data *comp_data)
 }
 
 /*!
- * @brief This API reads the sensor temperature, pressure and humidity data in forced mode.
- */
-int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev, double *temp_amb)
-{
-    /* Variable to define the result */
-    int8_t rslt = BME280_OK;
-
-    /* Variable to define the selecting sensors */
-    uint8_t settings_sel = 0;
-
-    /* Variable to store minimum wait time between consecutive measurement in force mode */
-    uint32_t req_delay;
-
-    /* Structure to get the pressure, temperature and humidity values */
-    struct bme280_data comp_data;
-
-    /* Recommended mode of operation: Indoor navigation */
-    dev->settings.osr_h = BME280_OVERSAMPLING_1X;
-    dev->settings.osr_p = BME280_OVERSAMPLING_16X;
-    dev->settings.osr_t = BME280_OVERSAMPLING_2X;
-    dev->settings.filter = BME280_FILTER_COEFF_16;
-
-    settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
-
-    /* Set the sensor settings */
-    rslt = bme280_set_sensor_settings(settings_sel, dev);
-    if (rslt != BME280_OK)
-    {
-        fprintf(stderr, "Failed to set sensor settings (code %+d).", rslt);
-
-        return rslt;
-    }
-
-    printf("Temperature, Pressure, Humidity\n");
-
-    /*Calculate the minimum delay required between consecutive measurement based upon the sensor enabled
-     *  and the oversampling configuration. */
-    req_delay = bme280_cal_meas_delay(&dev->settings);
-
-    /* Continuously stream sensor data */
-    int count = 5;
-    while (count > 0)
-    {
-        /* Set the sensor to forced mode */
-        rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
-        if (rslt != BME280_OK)
-        {
-            fprintf(stderr, "Failed to set sensor mode (code %+d).", rslt);
-            break;
-        }
-
-        /* Wait for the measurement to complete and print data */
-        dev->delay_us(req_delay, dev->intf_ptr);
-        usleep(100000);
-        rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
-        // sleep(1);
-        if (rslt != BME280_OK)
-        {
-            fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
-            break;
-        }
-        *temp_amb = comp_data.temperature;
-        printf("temperatura ambiente na função: %lf\n", *temp_amb);
-        print_sensor_data(&comp_data);
-        count--;
-    }
-
-    return rslt;
-}
-
-/*!
  * @brief This function mounts i2c bus structure
  */
 void monta_i2c(struct bme280_dev *dev, struct identifier *id)
@@ -202,10 +131,11 @@ void abre_i2c(struct bme280_dev *dev, struct identifier *id)
 /*!
  * @brief This function start the read of the I2C connection
  */
-void le_temp_i2c(struct bme280_dev *dev, double *temp_amb)
+void inicializa_bme280_i2c(struct bme280_dev *dev)
 {
     /* Variable to define the result */
     int8_t rslt = BME280_OK; 
+
     /* Initialize the bme280 */
     rslt = bme280_init(dev); 
     
@@ -214,11 +144,73 @@ void le_temp_i2c(struct bme280_dev *dev, double *temp_amb)
         fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
         exit(1);
     }
+}
 
-    rslt = stream_sensor_data_forced_mode(dev, temp_amb);
+/*!
+ * @brief This function start the read of the I2C connection
+ */
+void configura_bme280_i2c(struct bme280_dev *dev)
+{
+    /* Variable to define the result */
+    int8_t rslt = BME280_OK; 
+
+    /* Variable to define the selecting sensors */
+    uint8_t settings_sel = 0;
+
+    /* Recommended mode of operation: Indoor navigation */
+    dev->settings.osr_h = BME280_OVERSAMPLING_1X;
+    dev->settings.osr_p = BME280_OVERSAMPLING_16X;
+    dev->settings.osr_t = BME280_OVERSAMPLING_2X;
+    dev->settings.filter = BME280_FILTER_COEFF_16;
+
+    settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
+
+    /* Set the sensor settings */
+    rslt = bme280_set_sensor_settings(settings_sel, dev);
     if (rslt != BME280_OK)
     {
-        fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
-        exit(1);
+        fprintf(stderr, "Failed to set sensor settings (code %+d).", rslt);
     }
+}
+
+/*!
+ * @brief This function start the read of the I2C connection
+ */
+int8_t le_temp_bme280_i2c(struct bme280_dev *dev, double *temp_amb)
+{
+    /* Variable to define the result */
+    int8_t rslt = BME280_OK;
+
+    /* Structure to get the pressure, temperature and humidity values */
+    struct bme280_data comp_data; 
+
+    /* Variable to store minimum wait time between consecutive measurement in force mode */
+    uint32_t req_delay;
+
+    /*Calculate the minimum delay required between consecutive measurement based upon the sensor enabled
+    *  and the oversampling configuration. */
+    req_delay = bme280_cal_meas_delay(&dev->settings);
+
+    /* Continuously stream sensor data */
+
+    /* Set the sensor to forced mode */
+    rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
+    if (rslt != BME280_OK)
+    {
+        fprintf(stderr, "Failed to set sensor mode (code %+d).", rslt);
+    }
+
+    /* Wait for the measurement to complete and print data */
+    dev->delay_us(req_delay, dev->intf_ptr);
+    usleep(100000);
+    rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
+    
+    if (rslt != BME280_OK)
+    {
+        fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
+    }
+    *temp_amb = comp_data.temperature;
+    printf("temperatura ambiente na função: %lf\n", *temp_amb);
+    print_sensor_data(&comp_data);
+    return rslt;
 }

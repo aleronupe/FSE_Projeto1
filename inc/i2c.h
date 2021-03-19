@@ -105,6 +105,12 @@ void monta_i2c(struct bme280_dev *dev, struct identifier *id);
  */
 void abre_i2c(struct bme280_dev *dev, struct identifier *id);
 
+
+void inicializa_bme280_i2c(struct bme280_dev *dev);
+
+void configura_bme280_i2c(struct bme280_dev *dev);
+
+
 /*!
  * @brief This function mounts i2c bus structure
  *
@@ -112,6 +118,6 @@ void abre_i2c(struct bme280_dev *dev, struct identifier *id);
  * @param[in] temp_amb   :   Pointer to structure that keeps environment temperature.
  *
  */
-void le_temp_i2c(struct bme280_dev *dev, double *temp_amb);
+int8_t le_temp_bme280_i2c(struct bme280_dev *dev, double *temp_amb);
 
 #endif /* I2C_H_ */
