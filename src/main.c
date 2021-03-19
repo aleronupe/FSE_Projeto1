@@ -36,7 +36,7 @@ int confere_crc(unsigned char *rx_buffer, int rx_length)
     {
         short crc_calc, crc_rec;
 
-        memcpy(&crc_rec, rx_buffer[7], 2);
+        memcpy(&crc_rec, (const void *)rx_buffer, 2);
         printf("crc recebido: %d\n", crc_rec);
 
         crc_calc = calcula_CRC(rx_buffer, 7);
@@ -67,7 +67,7 @@ void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
     int rx_length = 0, out_crc = 0;
     unsigned char rx_buffer[256];
     while(out_crc != 1){
-        out_crc = confere_crc(&rx_buffer, rx_length);
+        out_crc = confere_crc(&rx_buffer[7], rx_length);
         rx_length = read(uart0_filestream, (void *)rx_buffer, 255);
     }
     
