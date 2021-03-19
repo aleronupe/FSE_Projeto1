@@ -39,7 +39,7 @@ int confere_crc(unsigned char *rx_buffer, int rx_length)
         memcpy(&crc_rec, (const void *)(rx_buffer + 7), 2);
         printf("crc recebido: %d\n", crc_rec);
 
-        crc_calc = calcula_CRC(*rx_buffer, 7);
+        crc_calc = calcula_CRC(rx_buffer, 7);
         printf("crc calculado: %d\n", crc_calc);
 
         if (crc_calc == crc_rec)
@@ -89,6 +89,8 @@ int main(int argc, const char *argv[])
     {
         le_temperatura(uart0_filestream, 0xC1, &temp_int);
         le_temperatura(uart0_filestream, 0xC2, &temp_ref);
+        printf("Temperatura Interna: %f\n", temp_int);
+        printf("Temperatura de Referência: %f\n", temp_ref);
     }
     close(uart0_filestream);
 
@@ -102,15 +104,15 @@ int main(int argc, const char *argv[])
     monta_i2c(&dev, &id);
     abre_i2c(&dev, &id);
     le_temp_i2c(&dev, &temp_amb);
-    printf("temperatura ambiente na main: %lf\n", temp_amb);
-    printf("Agora com módulos :)");
+    printf("temperatura Ambiente na main: %lf\n", temp_amb);
+    printf("Agora com módulos :)\n");
 
     close(id.fd);
 
     ////////////////////// GPIO ///////////////////
 
-    if (wiringPiSetup() == -1)
-        exit(1);
+    // if (wiringPiSetup() == -1)
+    //     exit(1);
 
     return 0;
 }
