@@ -128,15 +128,15 @@ int main(int argc, const char *argv[])
     for (intensity = 0; intensity < 101; intensity = intensity + 10)
     {
         softPwmWrite(PWM_pin_vent, intensity); /* change the value of PWM */
-        sleep(1)
+        sleep(1);
     }
 
     softPwmWrite(PWM_pin_vent, 0);
 
-        for (intensity = 100; intensity >= 0; intensity--)
+    for (intensity = 100; intensity >= 0; intensity--)
     {
         softPwmWrite(PWM_pin_res, intensity);
-        delay(10);
+       sleep(1);
     }
 
     softPwmWrite(PWM_pin_res, 0);
