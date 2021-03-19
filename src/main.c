@@ -6,7 +6,7 @@
 #include <linux/i2c-dev.h> //Used for I2C
 #include <sys/ioctl.h>     //Used for I2C
 #include <stdlib.h>
-
+#include <wiringPi.h> //Used for GPIO
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
@@ -66,11 +66,12 @@ void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
 
     int rx_length = 0, out_crc = 0;
     unsigned char rx_buffer[256];
-    while(out_crc != 1){
+    while (out_crc != 1)
+    {
         out_crc = confere_crc(&rx_buffer, rx_length);
         rx_length = read(uart0_filestream, (void *)rx_buffer, 255);
     }
-    
+
     memcpy(temp, &rx_buffer[3], 4);
 }
 
@@ -107,6 +108,9 @@ int main(int argc, const char *argv[])
     close(id.fd);
 
     ////////////////////// GPIO ///////////////////
+
+    if (wiringPiSetup() == -1)
+        exit(1);
 
     return 0;
 }
