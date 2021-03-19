@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>     //Used for I2C
 #include <stdlib.h>
 #include <wiringPi.h> //Used for GPIO
+#include <softPwm.h>  //Used for GPIO
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
@@ -114,8 +115,31 @@ int main(int argc, const char *argv[])
 
     ////////////////////// GPIO ///////////////////
 
-    // if (wiringPiSetup() == -1)
-    //     exit(1);
+    int PWM_pin_res = 4, PWM_pin_vent = 5; /* GPIO1 as per WiringPi,GPIO18 as per BCM */
+    int intensity;
+    wiringPiSetup();
+
+    pinMode(PWM_pin_res, OUTPUT); /* set GPIO as output */
+    softPwmCreate(PWM_pin_res, 1, 100);
+
+    pinMode(PWM_pin_vent, OUTPUT); /* set GPIO as output */
+    softPwmCreate(PWM_pin_vent, 1, 100);
+
+    for (intensity = 0; intensity < 101; intensity = intensity + 10)
+    {
+        softPwmWrite(PWM_pin_vent, intensity); /* change the value of PWM */
+        sleep(1)
+    }
+
+    softPwmWrite(PWM_pin_vent, 0);
+
+        for (intensity = 100; intensity >= 0; intensity--)
+    {
+        softPwmWrite(PWM_pin_res, intensity);
+        delay(10);
+    }
+
+    softPwmWrite(PWM_pin_res, 0);
 
     return 0;
 }
