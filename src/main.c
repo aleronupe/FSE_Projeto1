@@ -11,6 +11,7 @@
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
+#include "../inc/lcd.h"
 
 void abre_uart(int *uart0_filestream)
 {
@@ -143,8 +144,15 @@ int main(int argc, const char *argv[])
 
     ////////////////// LCD /////////////////
 
-    int fd = wiringPiI2CSetup(I2C_ADDR);
     lcd_init(); // setup LCD
+
+    int LINE1 = 0x80; // 1st line
+    int LINE2 = 0xC0; // 2nd line
+
+    lcdLoc(LINE1);
+    typeln("Using wiringPi");
+    lcdLoc(LINE2);
+    typeln("Alexandre editor.");
 
     return 0;
 }

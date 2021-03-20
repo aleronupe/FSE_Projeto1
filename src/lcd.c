@@ -32,74 +32,63 @@
 
 #define ENABLE  0b00000100 // Enable bit
 
-void lcd_init(void);
-void lcd_byte(int bits, int mode);
-void lcd_toggle_enable(int bits);
-
-// added by Lewis
-void typeInt(int i);
-void typeFloat(float myFloat);
-void lcdLoc(int line); //move cursor
-void ClrLcd(void); // clr LCD return home
-void typeln(const char *s);
-void typeChar(char val);
 int fd;  // seen by all subroutines
 
-int main()   {
+// int main()   {
 
-  if (wiringPiSetup () == -1) exit (1);
+//   if (wiringPiSetup () == -1) exit (1);
 
-  fd = wiringPiI2CSetup(I2C_ADDR);
+//   fd = wiringPiI2CSetup(I2C_ADDR);
 
-  //printf("fd = %d ", fd);
+//   //printf("fd = %d ", fd);
 
-  lcd_init(); // setup LCD
+//   lcd_init(); // setup LCD
 
-  char array1[] = "Hello world!";
+//   char array1[] = "Hello world!";
 
-  while (1)   {
+//   while (1)   {
 
-    lcdLoc(LINE1);
-    typeln("Using wiringPi");
-    lcdLoc(LINE2);
-    typeln("Geany editor.");
+//     lcdLoc(LINE1);
+//     typeln("Using wiringPi");
+//     lcdLoc(LINE2);
+//     typeln("Geany editor.");
 
-    delay(2000);
-    ClrLcd();
-    lcdLoc(LINE1);
-    typeln("I2c  Programmed");
-    lcdLoc(LINE2);
-    typeln("in C not Python.");
+//     delay(2000);
+//     ClrLcd();
+//     lcdLoc(LINE1);
+//     typeln("I2c  Programmed");
+//     lcdLoc(LINE2);
+//     typeln("in C not Python.");
 
-    delay(2000);
-    ClrLcd();
-    lcdLoc(LINE1);
-    typeln("Arduino like");
-    lcdLoc(LINE2);
-    typeln("fast and easy.");
+//     delay(2000);
+//     ClrLcd();
+//     lcdLoc(LINE1);
+//     typeln("Arduino like");
+//     lcdLoc(LINE2);
+//     typeln("fast and easy.");
 
-    delay(2000);
-    ClrLcd();
-    lcdLoc(LINE1);
-    typeln(array1);
+//     delay(2000);
+//     ClrLcd();
+//     lcdLoc(LINE1);
+//     typeln(array1);
 
-    delay(2000);
-    ClrLcd(); // defaults LINE1
-    typeln("Int  ");
-    int value = 20125;
-    typeInt(value);
+//     delay(2000);
+//     ClrLcd(); // defaults LINE1
+//     typeln("Int  ");
+//     int value = 20125;
+//     typeInt(value);
 
-    delay(2000);
-    lcdLoc(LINE2);
-    typeln("Float ");
-    float FloatVal = 10045.25989;
-    typeFloat(FloatVal);
-    delay(2000);
-  }
+//     delay(2000);
+//     lcdLoc(LINE2);
+//     typeln("Float ");
+//     float FloatVal = 10045.25989;
+//     typeFloat(FloatVal);
+//     delay(2000);
+//   }
 
-  return 0;
+//   return 0;
 
-}
+// }
 
 
 // float to string
@@ -170,9 +159,9 @@ void lcd_toggle_enable(int bits)   {
   delayMicroseconds(500);
 }
 
-
 void lcd_init()   {
   // Initialise display
+  fd = wiringPiI2CSetup(I2C_ADDR);
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
   lcd_byte(0x06, LCD_CMD); // Cursor move direction
