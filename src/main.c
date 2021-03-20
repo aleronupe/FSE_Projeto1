@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
+#include <unistd.h>
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
