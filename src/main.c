@@ -1,10 +1,5 @@
 #include <stdio.h>
-#include <unistd.h>  //Used for UART
-#include <fcntl.h>   //Used for UART
-#include <termios.h> //Used for UART
 #include <string.h>
-#include <linux/i2c-dev.h> //Used for I2C
-#include <sys/ioctl.h>     //Used for I2C
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
