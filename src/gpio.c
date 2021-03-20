@@ -1,5 +1,7 @@
 #include <wiringPi.h> //Used for GPIO
 #include <softPwm.h>  //Used for GPIO
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Variáveis Globais do GPIO */
 #define PWM_PIN_RES 4
