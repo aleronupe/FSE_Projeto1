@@ -136,22 +136,22 @@ int main(int argc, const char *argv[])
         {
             softPwmWrite(PWM_PIN_RES, 0);
             softPwmWrite(PWM_PIN_VENT, abs(intensity));
-            printf("Ventoinha Ligada");
+            printf("Ventoinha Ligada\n");
         }
         else if (intensity < 0)
         {
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, abs(intensity));
-            printf("Resistência Ligada");
+            printf("Resistência Ligada\n");
 
         }
         else
         {
-            printf("NNehum Ligado");
+            printf("Nenhum Ligado\n");
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, 0);
         }
-
+	printf("------------------------\n");
         usleep(700000);
     }
 
