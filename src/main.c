@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <time.h>
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
@@ -96,8 +95,7 @@ int main(int argc, const char *argv[])
             flag_grava_csv = 1;
         else
         {
-            unsigned int tempo = (unsigned)time(NULL);
-            escreve_csv(tempo, temp_int, temp_amb, temp_ref, sinal_controle);
+            escreve_csv(temp_int, temp_amb, temp_ref, sinal_controle);
             printf("Gravou CSV");
             flag_grava_csv = 0;
         }

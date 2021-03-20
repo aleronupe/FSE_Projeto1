@@ -3,6 +3,6 @@
 
 void abre_ou_cria_csv();
 
-void escreve_csv(int dataHora, float TI, double TE, float TR, double inten);
+void escreve_csv(float TI, double TE, float TR, double inten);
 
 #endif /* CSV_H_ */
