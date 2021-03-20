@@ -13,4 +13,6 @@ void ClrLcd(void); // clr LCD return home
 void typeln(const char *s);
 void typeChar(char val);
 
+void escreve_temperaturas_lcd(float temp_int, float temp_ref, double temp_amb);
+
 #endif /* I2C_H_ */
