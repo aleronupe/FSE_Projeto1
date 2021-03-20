@@ -44,4 +44,5 @@ void desativa_circuito_de_potencia()
 {
     softPwmWrite(PWM_PIN_VENT, 0);
     softPwmWrite(PWM_PIN_RES, 0);
+    sleep(1);
 }

@@ -12,6 +12,7 @@
 #include "../inc/pid.h"
 #include "../inc/csv.h"
 #include "../inc/gpio.h"
+#include "../inc/menu.h"
 
 int flag_faz_controle = 1;
 
@@ -28,6 +29,8 @@ int main(int argc, const char *argv[])
 
     signal(SIGINT, fecha_conexoes);
     signal(SIGKILL, fecha_conexoes);
+
+    write_menu();
 
     /*************** Variáveis ************/
     int flag_grava_csv = 0;
@@ -128,9 +131,8 @@ void fecha_conexoes()
 
     /* Finalização do GPIO */
     printf("Finalizando conexão com GPIO...\n");
-
-    printf("Finalizado!\n");
     desativa_circuito_de_potencia();
+    printf("Finalizado!\n");
     printf("Tchau!\n");
     exit(0);
 }
