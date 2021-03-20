@@ -16,6 +16,8 @@
 #include "../inc/uart.h"
 #include "../inc/pid.h"
 
+int flag_faz_controle = 1;
+
 /* Variáveis Globais da UART */
 int uart0_filestream = -1;
 
@@ -28,6 +30,7 @@ struct identifier id;
 
 void fecha_conexoes()
 {
+    flag_faz_controle = 0;
     /* Finalização da UART */
     printf("Finalizando conexão com UART...\n");
     close(uart0_filestream);
@@ -45,6 +48,7 @@ void fecha_conexoes()
     printf("Finalizado!\n");
 
     printf("Tchau!\n");
+    exit(0);
 }
 
 int main(int argc, const char *argv[])
@@ -98,7 +102,7 @@ int main(int argc, const char *argv[])
 
     ////////////////////// UART ///////////////////
 
-    while (1)
+    while (flag_faz_controle)
     {
         /* UART */
         le_temperatura(uart0_filestream, 0xC1, &temp_int);
@@ -111,7 +115,7 @@ int main(int argc, const char *argv[])
         lcdLoc(LINE1);
         typeln("TI: ");
         typeFloat(temp_int);
-        typeln("TR: ");
+        typeln(" TR: ");
         typeFloat(temp_ref);
         lcdLoc(LINE2);
         typeln("TA: ");
@@ -132,14 +136,18 @@ int main(int argc, const char *argv[])
         {
             softPwmWrite(PWM_PIN_RES, 0);
             softPwmWrite(PWM_PIN_VENT, abs(intensity));
+            printf("Ventoinha Ligada");
         }
         else if (intensity < 0)
         {
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, abs(intensity));
+            printf("Resistência Ligada");
+
         }
         else
         {
+            printf("NNehum Ligado");
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, 0);
         }

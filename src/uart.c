@@ -66,11 +66,11 @@ void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
     {
         if(count > 0){
             printf("Erro na leitura dos dados da UART\n");
-            printf("Requisitando dados novamente...(%d/10)", count);
+            printf("Requisitando dados novamente...(%d/10)\n", count);
         }
             
-        out_crc = confere_crc(&rx_buffer[0], rx_length);
         rx_length = read(uart0_filestream, (void *)rx_buffer, 255);
+        out_crc = confere_crc(&rx_buffer[0], rx_length);
         count++;
     }
 
