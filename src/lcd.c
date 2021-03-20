@@ -126,21 +126,6 @@ void typeln(const char *s)   {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // float to string
 void typeFloat(float myFloat)   {
   char buffer[20];
@@ -171,13 +156,6 @@ void typeChar(char val)   {
 
   lcd_byte(val, LCD_CHR);
 }
-
-
-
-
-
-
-
 
 void lcd_init()   {
   // Initialise display

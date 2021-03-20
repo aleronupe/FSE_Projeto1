@@ -8,8 +8,9 @@
 void abre_uart(int *uart0_filestream)
 {
     *uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
-    if (*uart0_filestream == -1)
+    if (*uart0_filestream == -1){
         printf("Erro - Não foi possível iniciar a UART.\n");
+    }
 }
 
 void monta_uart(int uart0_filestream)
@@ -60,10 +61,17 @@ void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
 
     int rx_length = 0, out_crc = 0;
     unsigned char rx_buffer[256];
-    while (out_crc != 1)
+    int count = 0;
+    while (out_crc != 1 && count < 11)
     {
+        if(count > 0){
+            printf("Erro na leitura dos dados da UART\n");
+            printf("Requisitando dados novamente...(%d/10)", count);
+        }
+            
         out_crc = confere_crc(&rx_buffer[0], rx_length);
         rx_length = read(uart0_filestream, (void *)rx_buffer, 255);
+        count++;
     }
 
     memcpy(temp, &rx_buffer[3], 4);

@@ -8,88 +8,147 @@
 #include <stdlib.h>
 #include <wiringPi.h> //Used for GPIO
 #include <softPwm.h>  //Used for GPIO
+#include <signal.h>
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
 #include "../inc/lcd.h"
 #include "../inc/uart.h"
+#include "../inc/pid.h"
+
+/* Variáveis Globais da UART */
+int uart0_filestream = -1;
+
+/* Variáveis Globais do I2C */
+struct identifier id;
+
+/* Variáveis Globais do GPIO */
+#define PWM_PIN_RES 4
+#define PWM_PIN_VENT 5
+
+void fecha_conexoes()
+{
+    /* Finalização da UART */
+    printf("Finalizando conexão com UART...\n");
+    close(uart0_filestream);
+    printf("Finalizado!\n");
+
+    /* Finalização do I2C */
+    printf("Finalizando conexão com I2C...\n");
+    close(id.fd);
+    printf("Finalizado!\n");
+
+    /* Finalização do GPIO */
+    printf("Finalizando conexão com GPIO...\n");
+    softPwmWrite(PWM_PIN_VENT, 0);
+    softPwmWrite(PWM_PIN_RES, 0);
+    printf("Finalizado!\n");
+
+    printf("Tchau!\n");
+}
 
 int main(int argc, const char *argv[])
 {
 
-    ////////////// UART///////////////////////
-    int uart0_filestream = -1;
+    signal(SIGINT, fecha_conexoes);
+    signal(SIGKILL, fecha_conexoes);
+
+    /*************** Variáveis ************/
+    /* Variáveis da UART */
     float temp_int, temp_ref;
 
+    /* Variáveis do I2C */
+    double temp_amb = 0.0;
+    struct bme280_dev dev;
+
+    /* Variáveis do PID */
+    double Kp = 5.0, Ki = 1.0, Kd = 5.0;
+    double sinal_controle = 0;
+
+    /* Variáveis do GPIO */
+    int intensity;
+
+    /* Variáveis do LCD */
+    int LINE1 = 0x80; // 1st line
+    int LINE2 = 0xC0; // 2nd line
+
+    /************ Configuração ************/
+    /* Configuração da UART */
     monta_uart(uart0_filestream);
     abre_uart(&uart0_filestream);
 
-    if (uart0_filestream != -1)
-    {
-        le_temperatura(uart0_filestream, 0xC1, &temp_int);
-        le_temperatura(uart0_filestream, 0xC2, &temp_ref);
-        printf("Temperatura Interna: %f\n", temp_int);
-        printf("Temperatura de Referência: %f\n", temp_ref);
-    }
-    close(uart0_filestream);
-
-    ////////////////////// I2C ///////////////////
-
-    double temp_amb = 0.0;
-
-    struct bme280_dev dev;
-    struct identifier id;
-    // int8_t rslt = BME280_OK;
-
+    /* Configuração do I2C */
     monta_i2c(&dev, &id);
     abre_i2c(&dev, &id);
     inicializa_bme280_i2c(&dev);
     configura_bme280_i2c(&dev);
-    le_temp_bme280_i2c(&dev, &temp_amb);
-    printf("temperatura Ambiente na main: %lf\n", temp_amb);
-    printf("Agora com módulos :)\n");
 
-    close(id.fd);
+    /* Configuração do PID */
+    pid_configura_constantes(Kp, Ki, Kd);
 
-    ////////////////////// GPIO ///////////////////
-
-    int PWM_pin_res = 4, PWM_pin_vent = 5; /* GPIO1 as per WiringPi,GPIO18 as per BCM */
-    int intensity;
+    /* Configuração do GPIO */
     wiringPiSetup();
+    pinMode(PWM_PIN_RES, OUTPUT);
+    softPwmCreate(PWM_PIN_RES, 1, 100);
+    pinMode(PWM_PIN_VENT, OUTPUT);
+    softPwmCreate(PWM_PIN_VENT, 1, 100);
 
-    pinMode(PWM_pin_res, OUTPUT); /* set GPIO as output */
-    softPwmCreate(PWM_pin_res, 1, 100);
+    /* Configuração do LCD */
+    lcd_init();
 
-    pinMode(PWM_pin_vent, OUTPUT); /* set GPIO as output */
-    softPwmCreate(PWM_pin_vent, 1, 100);
+    ////////////////////// UART ///////////////////
 
-    for (intensity = 0; intensity < 101; intensity = intensity + 10)
+    while (1)
     {
-        softPwmWrite(PWM_pin_vent, intensity); /* change the value of PWM */
-        sleep(1);
+        /* UART */
+        le_temperatura(uart0_filestream, 0xC1, &temp_int);
+        le_temperatura(uart0_filestream, 0xC2, &temp_ref);
+
+        /* I2C */
+        le_temp_bme280_i2c(&dev, &temp_amb);
+
+        /* LCD */
+        lcdLoc(LINE1);
+        typeln("TI: ");
+        typeFloat(temp_int);
+        typeln("TR: ");
+        typeFloat(temp_ref);
+        lcdLoc(LINE2);
+        typeln("TA: ");
+        typeFloat((float)temp_amb);
+        printf("temperatura Ambiente: %lf\n", temp_amb);
+        printf("Temperatura Interna: %f\n", temp_int);
+        printf("Temperatura de Referência: %f\n", temp_ref);
+
+        /* PID */
+        pid_atualiza_referencia(temp_ref);
+        sinal_controle = pid_controle(temp_int);
+        printf("PID: %f\n", sinal_controle);
+
+        /* GPIO */
+        intensity = sinal_controle;
+        printf("Intensity: %d\n", intensity);
+        if (intensity >= 40)
+        {
+            softPwmWrite(PWM_PIN_RES, 0);
+            softPwmWrite(PWM_PIN_VENT, abs(intensity));
+        }
+        else if (intensity < 0)
+        {
+            softPwmWrite(PWM_PIN_VENT, 0);
+            softPwmWrite(PWM_PIN_RES, abs(intensity));
+        }
+        else
+        {
+            softPwmWrite(PWM_PIN_VENT, 0);
+            softPwmWrite(PWM_PIN_RES, 0);
+        }
+
+        usleep(700000);
     }
 
-    softPwmWrite(PWM_pin_vent, 0);
-
-    for (intensity = 100; intensity >= 0; intensity = intensity - 10)
-    {
-        softPwmWrite(PWM_pin_res, intensity);
-        sleep(1);
-    }
-
-    softPwmWrite(PWM_pin_res, 0);
-
-    ////////////////// LCD /////////////////
-
-    lcd_init(); // setup LCD
-
-    int LINE1 = 0x80; // 1st line
-    int LINE2 = 0xC0; // 2nd line
-
-    lcdLoc(LINE1);
-    typeln("Using wiringPi");
-    lcdLoc(LINE2);
-    typeln("Alexandre editor.");
+    /************ Finalização ************/
+    fecha_conexoes();
 
     return 0;
 }
