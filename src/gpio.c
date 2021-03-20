@@ -2,6 +2,7 @@
 #include <softPwm.h>  //Used for GPIO
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 /* Variáveis Globais do GPIO */
 #define PWM_PIN_RES 4
@@ -43,6 +44,10 @@ void ativa_circuito_de_potencia(int intensity)
 void desativa_circuito_de_potencia()
 {
     softPwmWrite(PWM_PIN_VENT, 0);
+    usleep(500000);
+    printf("Desligou a Ventoinha");
+
     softPwmWrite(PWM_PIN_RES, 0);
-    sleep(1);
+    usleep(500000);
+    printf("Desligou o Resistor");
 }
