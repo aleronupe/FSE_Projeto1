@@ -32,7 +32,7 @@ void fecha_conexoes()
 {
     flag_faz_controle = 0;
     /* Finalização da UART */
-    printf("Finalizando conexão com UART...\n");
+    printf("\nFinalizando conexão com UART...\n");
     close(uart0_filestream);
     printf("Finalizado!\n");
 
@@ -132,18 +132,18 @@ int main(int argc, const char *argv[])
         /* GPIO */
         intensity = sinal_controle;
         printf("Intensity: %d\n", intensity);
-        if (intensity >= 40)
-        {
-            softPwmWrite(PWM_PIN_RES, 0);
-            softPwmWrite(PWM_PIN_VENT, abs(intensity));
-            printf("Ventoinha Ligada\n");
-        }
-        else if (intensity < 0)
+        if (intensity > 0)
         {
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, abs(intensity));
             printf("Resistência Ligada\n");
+        }
+        else if (intensity <= -40)
+        {
 
+            softPwmWrite(PWM_PIN_RES, 0);
+            softPwmWrite(PWM_PIN_VENT, abs(intensity));
+            printf("Ventoinha Ligada\n");
         }
         else
         {
@@ -151,7 +151,7 @@ int main(int argc, const char *argv[])
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, 0);
         }
-	printf("------------------------\n");
+        printf("------------------------\n");
         usleep(700000);
     }
 
