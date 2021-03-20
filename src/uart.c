@@ -52,8 +52,8 @@ void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
     short crc_temp = calcula_CRC(msg_temp, 7);
     memcpy(&msg_temp[7], (const void *)&crc_temp, 2);
 
-    int count = write(uart0_filestream, &msg_temp[0], 9);
-    if (count < 0)
+    int write_result = write(uart0_filestream, &msg_temp[0], 9);
+    if (write_result < 0)
         printf("UART TX error\n");
 
     usleep(100000);
