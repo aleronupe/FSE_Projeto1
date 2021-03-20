@@ -9,6 +9,7 @@
 #include <wiringPi.h> //Used for GPIO
 #include <softPwm.h>  //Used for GPIO
 #include <signal.h>
+#include <time.h>
 #include "../inc/crc16.h"
 #include "../inc/bme280.h"
 #include "../inc/i2c.h"
@@ -134,15 +135,18 @@ int main(int argc, const char *argv[])
             softPwmWrite(PWM_PIN_VENT, 0);
             softPwmWrite(PWM_PIN_RES, 0);
         }
-        printf("------------------------\n");
 
         if(flag_grava_csv == 0)
             flag_grava_csv = 1;
         else{
-            unsigned int tempo = (unsigned)time(NULL)
+            unsigned int tempo = (unsigned)time(NULL);
             escreve_csv(tempo, temp_int, temp_amb, temp_ref, sinal_controle);
+            printf("Gravou CSV");
             flag_grava_csv = 0;
         }
+
+        printf("------------------------\n");
+
 
         usleep(700000);
     }
