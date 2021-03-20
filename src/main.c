@@ -136,10 +136,15 @@ int main(int argc, const char *argv[])
     for (intensity = 100; intensity >= 0; intensity--)
     {
         softPwmWrite(PWM_pin_res, intensity);
-       sleep(1);
+        sleep(1);
     }
 
     softPwmWrite(PWM_pin_res, 0);
+
+    ////////////////// LCD /////////////////
+
+    int fd = wiringPiI2CSetup(I2C_ADDR);
+    lcd_init(); // setup LCD
 
     return 0;
 }
