@@ -90,6 +90,56 @@ int fd;  // seen by all subroutines
 
 // }
 
+void lcd_toggle_enable(int bits)   {
+  // Toggle enable pin on LCD display
+  delayMicroseconds(500);
+  wiringPiI2CReadReg8(fd, (bits | ENABLE));
+  delayMicroseconds(500);
+  wiringPiI2CReadReg8(fd, (bits & ~ENABLE));
+  delayMicroseconds(500);
+}
+
+void lcd_byte(int bits, int mode)   {
+
+  //Send byte to data pins
+  // bits = the data
+  // mode = 1 for data, 0 for command
+  int bits_high;
+  int bits_low;
+  // uses the two half byte writes to LCD
+  bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT ;
+  bits_low = mode | ((bits << 4) & 0xF0) | LCD_BACKLIGHT ;
+
+  // High bits
+  wiringPiI2CReadReg8(fd, bits_high);
+  lcd_toggle_enable(bits_high);
+
+  // Low bits
+  wiringPiI2CReadReg8(fd, bits_low);
+  lcd_toggle_enable(bits_low);
+}
+
+// this allows use of any size string
+void typeln(const char *s)   {
+
+  while ( *s ) lcd_byte(*(s++), LCD_CHR);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // float to string
 void typeFloat(float myFloat)   {
@@ -123,41 +173,11 @@ void typeChar(char val)   {
 }
 
 
-// this allows use of any size string
-void typeln(const char *s)   {
 
-  while ( *s ) lcd_byte(*(s++), LCD_CHR);
 
-}
 
-void lcd_byte(int bits, int mode)   {
 
-  //Send byte to data pins
-  // bits = the data
-  // mode = 1 for data, 0 for command
-  int bits_high;
-  int bits_low;
-  // uses the two half byte writes to LCD
-  bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT ;
-  bits_low = mode | ((bits << 4) & 0xF0) | LCD_BACKLIGHT ;
 
-  // High bits
-  wiringPiI2CReadReg8(fd, bits_high);
-  lcd_toggle_enable(bits_high);
-
-  // Low bits
-  wiringPiI2CReadReg8(fd, bits_low);
-  lcd_toggle_enable(bits_low);
-}
-
-void lcd_toggle_enable(int bits)   {
-  // Toggle enable pin on LCD display
-  delayMicroseconds(500);
-  wiringPiI2CReadReg8(fd, (bits | ENABLE));
-  delayMicroseconds(500);
-  wiringPiI2CReadReg8(fd, (bits & ~ENABLE));
-  delayMicroseconds(500);
-}
 
 void lcd_init()   {
   // Initialise display
