@@ -15,6 +15,7 @@
 #include "../inc/lcd.h"
 #include "../inc/uart.h"
 #include "../inc/pid.h"
+#include "../inc/csv.h"
 
 int flag_faz_controle = 1;
 
@@ -28,28 +29,7 @@ struct identifier id;
 #define PWM_PIN_RES 4
 #define PWM_PIN_VENT 5
 
-void fecha_conexoes()
-{
-    flag_faz_controle = 0;
-    /* Finalização da UART */
-    printf("\nFinalizando conexão com UART...\n");
-    close(uart0_filestream);
-    printf("Finalizado!\n");
-
-    /* Finalização do I2C */
-    printf("Finalizando conexão com I2C...\n");
-    close(id.fd);
-    printf("Finalizado!\n");
-
-    /* Finalização do GPIO */
-    printf("Finalizando conexão com GPIO...\n");
-    softPwmWrite(PWM_PIN_VENT, 0);
-    softPwmWrite(PWM_PIN_RES, 0);
-    printf("Finalizado!\n");
-
-    printf("Tchau!\n");
-    exit(0);
-}
+void fecha_conexoes();
 
 int main(int argc, const char *argv[])
 {
@@ -58,6 +38,8 @@ int main(int argc, const char *argv[])
     signal(SIGKILL, fecha_conexoes);
 
     /*************** Variáveis ************/
+    int flag_grava_csv = 0;
+
     /* Variáveis da UART */
     float temp_int, temp_ref;
 
@@ -100,7 +82,8 @@ int main(int argc, const char *argv[])
     /* Configuração do LCD */
     lcd_init();
 
-    ////////////////////// UART ///////////////////
+    /* CSV */
+    abre_ou_cria_csv();
 
     while (flag_faz_controle)
     {
@@ -152,6 +135,15 @@ int main(int argc, const char *argv[])
             softPwmWrite(PWM_PIN_RES, 0);
         }
         printf("------------------------\n");
+
+        if(flag_grava_csv == 0)
+            flag_grava_csv = 1;
+        else{
+            unsigned int tempo = (unsigned)time(NULL)
+            escreve_csv(tempo, temp_int, temp_amb, temp_ref, sinal_controle);
+            flag_grava_csv = 0;
+        }
+
         usleep(700000);
     }
 
@@ -159,4 +151,27 @@ int main(int argc, const char *argv[])
     fecha_conexoes();
 
     return 0;
+}
+
+void fecha_conexoes()
+{
+    flag_faz_controle = 0;
+    /* Finalização da UART */
+    printf("\nFinalizando conexão com UART...\n");
+    close(uart0_filestream);
+    printf("Finalizado!\n");
+
+    /* Finalização do I2C */
+    printf("Finalizando conexão com I2C...\n");
+    close(id.fd);
+    printf("Finalizado!\n");
+
+    /* Finalização do GPIO */
+    printf("Finalizando conexão com GPIO...\n");
+    softPwmWrite(PWM_PIN_VENT, 0);
+    softPwmWrite(PWM_PIN_RES, 0);
+    printf("Finalizado!\n");
+
+    printf("Tchau!\n");
+    exit(0);
 }
