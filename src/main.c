@@ -6,8 +6,6 @@
 #include <linux/i2c-dev.h> //Used for I2C
 #include <sys/ioctl.h>     //Used for I2C
 #include <stdlib.h>
-#include <wiringPi.h> //Used for GPIO
-#include <softPwm.h>  //Used for GPIO
 #include <signal.h>
 #include <time.h>
 #include "../inc/crc16.h"
@@ -17,6 +15,7 @@
 #include "../inc/uart.h"
 #include "../inc/pid.h"
 #include "../inc/csv.h"
+#include "../inc/gpio.h"
 
 int flag_faz_controle = 1;
 
@@ -25,10 +24,6 @@ int uart0_filestream = -1;
 
 /* Variáveis Globais do I2C */
 struct identifier id;
-
-/* Variáveis Globais do GPIO */
-#define PWM_PIN_RES 4
-#define PWM_PIN_VENT 5
 
 void fecha_conexoes();
 
@@ -74,11 +69,7 @@ int main(int argc, const char *argv[])
     pid_configura_constantes(Kp, Ki, Kd);
 
     /* Configuração do GPIO */
-    wiringPiSetup();
-    pinMode(PWM_PIN_RES, OUTPUT);
-    softPwmCreate(PWM_PIN_RES, 1, 100);
-    pinMode(PWM_PIN_VENT, OUTPUT);
-    softPwmCreate(PWM_PIN_VENT, 1, 100);
+    configura_GPIO();
 
     /* Configuração do LCD */
     lcd_init();
@@ -115,30 +106,12 @@ int main(int argc, const char *argv[])
 
         /* GPIO */
         intensity = sinal_controle;
-        printf("Intensity: %d\n", intensity);
-        if (intensity > 0)
-        {
-            softPwmWrite(PWM_PIN_VENT, 0);
-            softPwmWrite(PWM_PIN_RES, abs(intensity));
-            printf("Resistência Ligada\n");
-        }
-        else if (intensity <= -40)
-        {
+        ativa_circuito_de_potencia(intensity);
 
-            softPwmWrite(PWM_PIN_RES, 0);
-            softPwmWrite(PWM_PIN_VENT, abs(intensity));
-            printf("Ventoinha Ligada\n");
-        }
+        if (flag_grava_csv == 0)
+            flag_grava_csv = 1;
         else
         {
-            printf("Nenhum Ligado\n");
-            softPwmWrite(PWM_PIN_VENT, 0);
-            softPwmWrite(PWM_PIN_RES, 0);
-        }
-
-        if(flag_grava_csv == 0)
-            flag_grava_csv = 1;
-        else{
             unsigned int tempo = (unsigned)time(NULL);
             escreve_csv(tempo, temp_int, temp_amb, temp_ref, sinal_controle);
             printf("Gravou CSV");
@@ -146,7 +119,6 @@ int main(int argc, const char *argv[])
         }
 
         printf("------------------------\n");
-
 
         usleep(700000);
     }
@@ -172,10 +144,9 @@ void fecha_conexoes()
 
     /* Finalização do GPIO */
     printf("Finalizando conexão com GPIO...\n");
-    softPwmWrite(PWM_PIN_VENT, 0);
-    softPwmWrite(PWM_PIN_RES, 0);
-    printf("Finalizado!\n");
 
+    printf("Finalizado!\n");
+    desativa_circuito_de_potencia();
     printf("Tchau!\n");
     exit(0);
 }
