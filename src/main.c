@@ -50,10 +50,6 @@ int main(int argc, const char *argv[])
     /* Variáveis do GPIO */
     int intensity;
 
-    /* Variáveis do LCD */
-    int LINE1 = 0x80; // 1st line
-    int LINE2 = 0xC0; // 2nd line
-
     /************ Configuração ************/
     /* Configuração da UART */
     monta_uart(uart0_filestream);
@@ -87,14 +83,7 @@ int main(int argc, const char *argv[])
         le_temp_bme280_i2c(&dev, &temp_amb);
 
         /* LCD */
-        lcdLoc(LINE1);
-        typeln("TI: ");
-        typeFloat(temp_int);
-        typeln(" TR: ");
-        typeFloat(temp_ref);
-        lcdLoc(LINE2);
-        typeln("TA: ");
-        typeFloat((float)temp_amb);
+        escreve_temperaturas_lcd(temp_int, temp_ref, temp_amb);
         printf("temperatura Ambiente: %lf\n", temp_amb);
         printf("Temperatura Interna: %f\n", temp_int);
         printf("Temperatura de Referência: %f\n", temp_ref);
