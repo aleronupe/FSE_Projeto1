@@ -5,6 +5,7 @@ void print_panel(Arg_Struct *main_struct)
 
     WINDOW *w;
     int ch, i = 0, width = 30;
+    char item[50];
     float temp_ref;
 
     if (main_struct->flag_insert_temp)
