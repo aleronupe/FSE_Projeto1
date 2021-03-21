@@ -212,6 +212,6 @@ double le_temp_bme280_i2c(struct bme280_dev *dev)
         fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
     }
     temp_amb = comp_data.temperature;
-    print_sensor_data(&comp_data);
+    // print_sensor_data(&comp_data);
     return temp_amb;
 }

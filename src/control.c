@@ -69,14 +69,10 @@ void controle_temp(void *args)
 
         /* LCD */
         escreve_temperaturas_lcd(struct_received->temp_int, temp_ref, struct_received->temp_ext);
-        printf("temperatura Externa: %lf\n", struct_received->temp_ext);
-        printf("Temperatura Interna: %f\n", struct_received->temp_int);
-        printf("Temperatura de Referência: %f\n", temp_ref);
 
         /* PID */
         pid_atualiza_referencia(temp_ref);
         sinal_controle = pid_controle(struct_received->temp_int);
-        printf("PID: %f\n", sinal_controle);
 
         /* GPIO */
         intensity = sinal_controle;
@@ -87,11 +83,8 @@ void controle_temp(void *args)
         else
         {
             escreve_csv(struct_received->temp_int, struct_received->temp_ext, temp_ref, sinal_controle);
-            printf("Gravou CSV\n");
             flag_grava_csv = 0;
         }
-
-        printf("------------------------\n");
 
         usleep(700000);
     }
