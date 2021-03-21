@@ -46,15 +46,18 @@ int confere_crc(unsigned char *rx_buffer, int rx_length)
         return 0;
 }
 
-void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
+float le_temperatura(int uart0_filestream, unsigned char sub_cod)
 {
+    float temp;
     unsigned char msg_temp[20] = {0x01, 0x23, sub_cod, 0x0, 0x8, 0x4, 0x0};
     short crc_temp = calcula_CRC(msg_temp, 7);
     memcpy(&msg_temp[7], (const void *)&crc_temp, 2);
 
     int write_result = write(uart0_filestream, &msg_temp[0], 9);
-    if (write_result < 0)
+    if (write_result < 0){
         printf("UART TX error\n");
+        exit(0);
+    }
 
     usleep(100000);
     // sleep(1);
@@ -74,5 +77,6 @@ void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp)
         count++;
     }
 
-    memcpy(temp, &rx_buffer[3], 4);
+    memcpy(&temp, &rx_buffer[3], 4);
+    return temp;
 }

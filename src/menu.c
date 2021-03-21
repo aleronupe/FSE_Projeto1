@@ -1,7 +1,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-void write_menu()
+void write_menu(void *args)
 {
     initscr();
 

@@ -134,6 +134,6 @@ void escreve_temperaturas_lcd(float temp_int, float temp_ref, double temp_amb)
 
   lcdLoc(LINE2);
   
-  typeln("TA: ");
+  typeln("TE: ");
   typeFloat((float)temp_amb);
 }
