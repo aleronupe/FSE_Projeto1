@@ -1,5 +1,3 @@
-#include <curses.h>
-#include <locale.h>
 #include <stdio.h>
 #include "ncurses-menu.h"
 #include "control.h"
