@@ -1,7 +1,4 @@
-#include <panel.h>
-#include <ncurses.h>
-#include <curses.h>
-#include "control.h"
+#include "panel.h"
 
 #define NLINES 10
 #define NCOLS 40
@@ -26,9 +23,13 @@ void print_panel(Arg_Struct *main_struct)
     keypad(stdscr, TRUE);
 
     if (main_struct->flag_insert_temp)
+    {
         temp_ref = main_struct->temp_ref_user;
+    }
     else
+    {
         temp_ref = main_struct->temp_ref_pot;
+    }
 
     /* Initialize all the colors */
     init_pair(1, COLOR_RED, COLOR_BLACK);
