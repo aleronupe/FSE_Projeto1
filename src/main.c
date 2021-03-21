@@ -5,9 +5,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "menu.h"
 #include "control.h"
-#include "panel.h"
+#include "my_panel.h"
 
 Arg_Struct main_struct;
 

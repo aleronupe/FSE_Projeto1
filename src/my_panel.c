@@ -1,9 +1,9 @@
-#include "panel.h"
+#include "my_panel.h"
 
 #define NLINES 10
 #define NCOLS 40
 
-void init_wins(WINDOW **wins, int n);
+void init_wins(WINDOW **wins, double TE, float TI, float *TR);
 void win_show(WINDOW *win, char *label, int label_color);
 void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string, chtype color);
 
@@ -12,7 +12,6 @@ void print_panel(Arg_Struct *main_struct)
     WINDOW *my_wins[3];
     PANEL *my_panels[3];
     PANEL *top;
-    int ch;
     float temp_ref;
 
     /* Initialize curses */
