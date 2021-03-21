@@ -26,7 +26,7 @@ typedef struct arg_struct
 
 } Arg_Struct;
 
-void controle_temp();
+void controle_temp(void *args);
 
 void fecha_conexoes();
 

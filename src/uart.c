@@ -3,6 +3,7 @@
 #include <fcntl.h>   //Used for UART
 #include <termios.h> //Used for UART
 #include <string.h>
+#include <stdlib.h>
 #include "../inc/crc16.h"
 
 void abre_uart(int *uart0_filestream)

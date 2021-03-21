@@ -26,8 +26,8 @@ int main(int argc, const char *argv[])
     pthread_t control_tid;
     pthread_t menu_tid;
 
-    pthread_create(&control_tid, NULL, &controle_temp, (void *)&main_struct);
-    pthread_create(&menu_tid, NULL, &write_menu, (void *)&main_struct);
+    pthread_create(&control_tid, NULL,(void *) controle_temp, (void *)&main_struct);
+    pthread_create(&menu_tid, NULL, (void *) write_menu, (void *)&main_struct);
 
     pthread_join(control_tid, NULL);
     pthread_join(menu_tid, NULL);
