@@ -73,7 +73,7 @@ void print_panel(Arg_Struct *main_struct)
 /* Put all the windows */
 void init_wins(WINDOW **wins, double TE, float TI, float *TR)
 {
-    int x, y, i;
+    int x, y;
     char label[80];
 
     y = 2;
