@@ -35,7 +35,6 @@ int confere_crc(unsigned char *rx_buffer, int rx_length)
         memcpy(&crc_rec, (const void *)(rx_buffer + 7), 2);
 
         crc_calc = calcula_CRC(rx_buffer, 7);
-
         if (crc_calc == crc_rec)
             return 1;
         else
