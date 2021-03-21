@@ -1,12 +1,13 @@
 #include <curses.h>
 #include <locale.h>
+#include <stdio.h>
 #include "ncurses-menu.h"
+#include "control.h"
 
 /* Prints typical menus that you might see in games */
-int
-main (int argc, char *argv[])
-{
-    int menu_ret = 1, menu_ret2 = 1;
+void write_menu(void *args){
+    Arg_Struct *struct_received = (Arg_Struct *)args;
+    int menu_ret = 1, menu_ret2 = 1, menu_temp = 1;
     char alts[][100] = {{"Start Game"},     /* Every menu needs an */
                          {"Load Game"},     /* array like these to */
                          {"Quit Game"},};   /* hold the entries.   */
@@ -14,6 +15,7 @@ main (int argc, char *argv[])
                          {"Slot 2"},
                          {"Slot 3"},
                          {"Return"},};
+    char temps[3][100];
 
     setlocale (LC_CTYPE, "");
 
@@ -29,8 +31,20 @@ main (int argc, char *argv[])
     do  /* This loop terminates when MAIN MENU returns 3, Quit Game.   */
     {   /* menu_ret is sent as the start value, to make the last entry */
         /* highlighted when you return to the main menu.               */
+
+        snprintf(temps[0], 10, "%lf\n", struct_received->temp_ext);
+        snprintf(temps[1], 10, "%f\n", struct_received->temp_int);
+        if(struct_received->flag_insert_temp) 
+            snprintf(temps[2], 10, "%f\n", struct_received->temp_ref_user); 
+        else{
+            snprintf(temps[2], 10, "%f\n", struct_received->temp_ref_pot); 
+        }
+
         menu_ret = print_menu (2, 5, 3, 15,
                                "MAIN MENU", alts, menu_ret);
+
+        menu_temp = print_menu (10, 5, 3, 15,
+                               "Temperaturas", temps, menu_temp);
 
         if (menu_ret == 1)  /* This is just an example program. */
         {                   /* You can't start an actual game.  */
@@ -54,5 +68,4 @@ main (int argc, char *argv[])
     while (menu_ret != 3); /* reprinted.                               */
 
     endwin();
-    return 0;
 }

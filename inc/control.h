@@ -19,10 +19,10 @@ typedef struct arg_struct
 {
     int flag_run;
     int flag_insert_temp;
-    float temp_ext;
+    double temp_ext;
     float temp_int;
-    double temp_ref_user;
-    double temp_ref_pot;
+    float temp_ref_user;
+    float temp_ref_pot;
 
 } Arg_Struct;
 
