@@ -1,9 +1,8 @@
 #ifndef USER_H_
 #define USER_H_
 
-#include "ncurses-menu.h"
 #include <curses.h>
-#include <locale.h>
+#include <ncurses.h>
 
 void opcoes_usuario();
 
