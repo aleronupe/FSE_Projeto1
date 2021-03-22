@@ -1,6 +1,19 @@
 # FSE_Projeto1
 
-O Projeto em questao busca realizar o controle de temperatura de um sistema isolado, acionando uma ventoinha para o resfriamento do sistema até a **Temperatura Externa** e um resistor para aquecer a **Temperatura Interna** até a **Temperatura de Referência**
+## Dados
+
+| Aluno | Matrícula |
+| --- | --- |
+| Alexandre Miguel Rodrigues Nunes Pereira | 16/0000840 |
+
+## Introdução
+
+O Projeto em questao busca realizar o controle de temperatura de um sistema isolado, acionando uma ventoinha para o resfriamento do sistema até a **Temperatura Externa** e um resistor para aquecer a **Temperatura Interna** até a **Temperatura de Referência**, como descrito no repositório do projeto em [https://gitlab.com/fse_fga/projetos_2020_2/projeto-1-2020.2](https://gitlab.com/fse_fga/projetos_2020_2/projeto-1-2020.2)
+
+## Dependências
+
+* [WiringPi](http://wiringpi.com/)
+* [ncurses](https://invisible-island.net/ncurses/announce.html)
 
 ## Execução
 
