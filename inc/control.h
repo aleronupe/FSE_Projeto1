@@ -23,6 +23,7 @@ typedef struct arg_struct
     float temp_int;
     float temp_ref_user;
     float temp_ref_pot;
+    double intensity;
 
 } Arg_Struct;
 

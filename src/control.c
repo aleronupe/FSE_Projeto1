@@ -77,6 +77,7 @@ void controle_temp(void *args)
         /* GPIO */
         intensity = sinal_controle;
         ativa_circuito_de_potencia(intensity);
+        struct_received->intensity = intensity;
 
         if (flag_grava_csv == 0)
             flag_grava_csv = 1;
