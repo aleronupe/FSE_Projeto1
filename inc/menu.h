@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <curses.h>
+#include <signal.h>
 #include "control.h"
 
 void atualiza_temperaturas(void *args);
