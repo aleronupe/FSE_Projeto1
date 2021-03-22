@@ -97,7 +97,7 @@ void imprimeDados(Arg_Struct *main_struct)
 		}
 
 		wrefresh(windowImprimeDados);
-		sleep(1);
+		usleep(600000);
 	}
 	echo();
 	nocbreak();
@@ -125,7 +125,7 @@ void opcoes_usuario(Arg_Struct *main_struct)
 {
 	int option;
 	float temp_ref;
-	windowEntradaUsuario = newwin(10, 50, 6, 1);
+	windowEntradaUsuario = newwin(10, 50, 8, 1);
 
 	while (main_struct->flag_run)
 	{
@@ -151,6 +151,9 @@ void opcoes_usuario(Arg_Struct *main_struct)
 					wclear(windowEntradaUsuario);
 					imprimirRotulo(windowEntradaUsuario, 3, 1, "Temperatura inválida");
 					wrefresh(windowEntradaUsuario);
+					sleep(1);
+					for(int i=0; i<10;i++)
+						printf("ENTREI\n");
 				}
 				else
 				{
