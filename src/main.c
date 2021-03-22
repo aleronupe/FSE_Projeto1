@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include "control.h"
 #include "menu.h"
+#include "user.h"
 
 Arg_Struct main_struct;
 
@@ -26,12 +27,10 @@ int main(int argc, const char *argv[])
     pthread_t control_tid;
     pthread_t menu_tid;
 
-    pthread_create(&control_tid, NULL,(void *) controle_temp, (void *)&main_struct);
-    pthread_create(&menu_tid, NULL, (void *) atualiza_temperaturas, (void *)&main_struct);
+    pthread_create(&control_tid, NULL, (void *)controle_temp, (void *)&main_struct);
+    pthread_create(&menu_tid, NULL, (void *)atualiza_temperaturas, (void *)&main_struct);
 
-    // while(main_struct.flag_run){
-    //     atualiza_temperaturas(&main_struct);
-    // }
+    opcoes_usuario();
 
     pthread_join(control_tid, NULL);
     pthread_join(menu_tid, NULL);
