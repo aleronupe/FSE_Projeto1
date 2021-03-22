@@ -42,7 +42,6 @@ void imprimeDados(Arg_Struct *main_struct)
 		wrefresh(windowImprimeDados);
 		sleep(1);
 	}
-	keypad(0);
 	echo();
 	nocbreak();
 	endwin();
