@@ -152,8 +152,6 @@ void opcoes_usuario(Arg_Struct *main_struct)
 					imprimirRotulo(windowEntradaUsuario, 3, 1, "Temperatura inválida");
 					wrefresh(windowEntradaUsuario);
 					sleep(1);
-					for(int i=0; i<10;i++)
-						printf("ENTREI\n");
 				}
 				else
 				{
