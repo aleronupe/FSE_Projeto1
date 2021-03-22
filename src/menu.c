@@ -92,12 +92,12 @@ void opcoes_usuario()
 {
 	int option;
 	windowEntradaUsuario = newwin(5, 50, 6, 1);
-	
 
 	printa_opcoes();
 	echo();
     wmove(windowEntradaUsuario, 5, 1);
-	mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
+	wscanw(windowEntradaUsuario,"%d", &option); 
+	// mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
 	mvwprintw(windowEntradaUsuario, 6, 1, "%d", option);
 
 	if (option < 1 || option > 3)
