@@ -4,10 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include <curses.h>
 #include "control.h"
 
-void inicia_menu(void *args);
-void atualiza_temperaturas(Arg_Struct *struct_received);
-void clear_menu(WINDOW *window);
+void atualiza_temperaturas(void *args);
 
 #endif /* MENU_H_ */
