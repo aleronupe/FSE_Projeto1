@@ -6,12 +6,12 @@ Arg_Struct main_struct;
 
 void createImprimeDadosWindow()
 {
-	int yMax, xMax;
-	int tamXwindow = 50, posX = 2;
-	int tamanhoYwindow = 5;
 
-	windowImprimeDados = newwin(tamanhoYwindow, tamXwindow, 1, posX);
-
+	windowImprimeDados = newwin(5, 20, 1, 1);
+	start_color();
+	init_pair(1, COLOR_GREEN, COLOR_BLACK);
+	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(3, COLOR_BLUE, COLOR_BLACK);
 	box(windowImprimeDados, 0, 0);
 	wrefresh(windowImprimeDados);
 }
@@ -35,9 +35,17 @@ void imprimeDados(Arg_Struct *main_struct)
 
 		wclear(windowImprimeDados);
 
-		mvwprintw(windowImprimeDados, 1, 1, "Temperatura Interna = %f", main_struct->temp_int);
-		mvwprintw(windowImprimeDados, 2, 1, "Temperatura Externa = %lf", main_struct->temp_ext);
-		mvwprintw(windowImprimeDados, 3, 2, "Temperatura de Referência = %f", temp_ref);
+		attron(COLOR_PAIR(1));
+		mvwprintw(windowImprimeDados, 1, 1, "TI: %3.2f", main_struct->temp_int);
+		attroff(COLOR_PAIR(1));
+
+		attron(COLOR_PAIR(2));
+		mvwprintw(windowImprimeDados, 2, 1, "TE: %3.2lf", main_struct->temp_ext);
+		attroff(COLOR_PAIR(2));
+
+		attron(COLOR_PAIR(3));
+		mvwprintw(windowImprimeDados, 3, 1, "TR: %3.2f", temp_ref);
+		attroff(COLOR_PAIR(3));
 
 		wrefresh(windowImprimeDados);
 		sleep(1);
