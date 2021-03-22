@@ -7,7 +7,7 @@
 #include "control.h"
 
 void inicia_menu(void *args);
-void atualiza_temperaturas(Data data);
+void atualiza_temperaturas(Arg_Struct *struct_received);
 void clear_menu(WINDOW *window);
 
 #endif /* MENU_H_ */

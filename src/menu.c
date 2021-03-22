@@ -112,7 +112,7 @@ void atualiza_temperaturas(Arg_Struct *struct_received)
 	}
 
 	mvwprintw(window, 6, 1, "\tTI: %4.2f", struct_received->temp_int);
-	mvwprintw(window, 7, 1, "\tTR: %4.2f", data.reference, data.control);
+	mvwprintw(window, 7, 1, "\tTR: %4.2f", temp_ref);
 	mvwprintw(window, 8, 1, "\tTE: %4.2lf", struct_received->temp_ext);
 	// mvwprintw(window, 9, 1, "\tRESISTOR: %s", data.control > 0 ? on : off);
 	// mvwprintw(window, 10, 1, "\tCOOLER: %s", data.control < -40 ? on : off);
@@ -180,7 +180,6 @@ void inicia_menu(void *args)
 				struct_received->flag_run = 0;
 				refresh();
 				endwin();
-				all_off();
 				exit(0);
 			}
 
