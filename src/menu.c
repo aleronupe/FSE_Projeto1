@@ -10,6 +10,11 @@ void iniciaTelas()
 	start_color(); 
 	cbreak();
 	keypad(stdscr, TRUE);
+	init_pair(1,COLOR_GREEN,COLOR_BLACK);
+	init_pair(2,COLOR_YELLOW,COLOR_BLACK);
+	init_pair(3,COLOR_BLUE,COLOR_BLACK);
+	init_pair(4,COLOR_MAGENTA,COLOR_BLACK);
+
 }
 
 void createImprimeDadosWindow()
@@ -46,11 +51,18 @@ void imprimeDados(Arg_Struct *main_struct)
 
 		wclear(windowImprimeDados);
 
+    	wattron(windowImprimeDados,COLOR_PAIR(2));
 		mvwprintw(windowImprimeDados, 1, 1, "TI: %3.2f", main_struct->temp_int);
+    	wattroff(windowImprimeDados,COLOR_PAIR(2));
 
+    	wattron(windowImprimeDados,COLOR_PAIR(3));
 		mvwprintw(windowImprimeDados, 2, 1, "TE: %3.2lf", main_struct->temp_ext);
+    	wattroff(windowImprimeDados,COLOR_PAIR(3));
 
+    	wattron(windowImprimeDados,COLOR_PAIR(4));
 		mvwprintw(windowImprimeDados, 3, 1, "TR: %3.2f", temp_ref);
+    	wattroff(windowImprimeDados,COLOR_PAIR(4));
+
 
 		wrefresh(windowImprimeDados);
 		sleep(1);
@@ -80,7 +92,7 @@ void opcoes_usuario()
 {
 	int option;
 	windowEntradaUsuario = newwin(5, 50, 6, 1);
-	init_pair(1,COLOR_GREEN,COLOR_BLACK);
+	
 
 	printa_opcoes();
 	echo();
