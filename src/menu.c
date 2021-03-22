@@ -1,8 +1,16 @@
 #include "menu.h"
 
-WINDOW *windowImprimeDados;
+WINDOW *windowImprimeDados, *windowEntradaUsuario;
 
 Arg_Struct main_struct;
+
+void iniciaTelas()
+{
+	initscr();
+	cbreak();
+	keypad(stdscr, TRUE);
+	curs_set(0);
+}
 
 void createImprimeDadosWindow()
 {
@@ -48,10 +56,35 @@ void imprimeDados(Arg_Struct *main_struct)
 void atualiza_temperaturas(void *args)
 {
 	Arg_Struct *struct_received = (Arg_Struct *)args;
-	initscr();
-	cbreak();
-	keypad(stdscr, TRUE);
-	curs_set(0);
 	createImprimeDadosWindow();
 	imprimeDados(struct_received);
+}
+
+void printa_opcoes()
+{
+	mvwprintw(windowEntradaUsuario, 1, 1, "Escolha uma opção:");
+	mvwprintw(windowEntradaUsuario, 2, 1, "1 - Inserir TR:");
+	mvwprintw(windowEntradaUsuario, 3, 1, "2 - Utilizar TR do Potenciômetro:");
+	mvwprintw(windowEntradaUsuario, 4, 1, "3 - Sair");
+	wrefresh(windowEntradaUsuario);
+}
+
+void opcoes_usuario()
+{
+	int option;
+	windowEntradaUsuario = newwin(5, 20, 6, 1);
+	printa_opcoes();
+	mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
+
+	if (option < 1 || option > 3)
+	{
+		wclear(windowEntradaUsuario);
+		mvwprintw(windowEntradaUsuario, 1, 1, "Valor inválido, insira novamente.");
+		wrefresh(windowEntradaUsuario);
+		sleep(1);
+	}
+	wclear(windowEntradaUsuario);
+	printa_opcoes();
+	wrefresh(windowEntradaUsuario);
+	mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
 }
