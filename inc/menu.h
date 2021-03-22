@@ -11,6 +11,6 @@
 
 void iniciaTelas();
 void atualiza_temperaturas(void *args);
-void opcoes_usuario();
+void opcoes_usuario(Arg_Struct *main_struct);
 
 #endif /* MENU_H_ */

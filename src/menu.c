@@ -9,6 +9,7 @@ void iniciaTelas()
 	initscr();
 	start_color(); 
 	cbreak();
+	curs_set(0);
 	keypad(stdscr, TRUE);
 	init_pair(1,COLOR_GREEN,COLOR_BLACK);
 	init_pair(2,COLOR_YELLOW,COLOR_BLACK);
@@ -88,27 +89,52 @@ void printa_opcoes()
 	wrefresh(windowEntradaUsuario);
 }
 
-void opcoes_usuario()
+void opcoes_usuario(Arg_Struct *main_struct)
 {
 	int option;
+	float temp_ref;
 	windowEntradaUsuario = newwin(5, 50, 6, 1);
 
-	printa_opcoes();
-	echo();
-    wmove(windowEntradaUsuario, 5, 1);
-	wscanw(windowEntradaUsuario,"%d", &option); 
-	// mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
-	mvwprintw(windowEntradaUsuario, 6, 1, "%d", option);
+	while(1){
+		printa_opcoes();
+		echo();
+		wmove(windowEntradaUsuario, 7, 1);
+		wscanw(windowEntradaUsuario,"%d", &option); 
+		// mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
+		// mvwprintw(windowEntradaUsuario, 6, 1, "%d", option);
 
-	if (option < 1 || option > 3)
-	{
-		wclear(windowEntradaUsuario);
-		mvwprintw(windowEntradaUsuario, 1, 1, "Valor inválido, insira novamente.");
-		wrefresh(windowEntradaUsuario);
-		sleep(1);
+		switch(option){
+			case 1:
+				wclear(windowEntradaUsuario);
+				imprimirRotulo(windowEntradaUsuario, 1, 1, "Digite a Temperatura de Referência:");
+				wmove(windowEntradaUsuario, 2, 1);
+				wscanw(windowEntradaUsuario,"%f", &temp_ref);
+				main_struct->flag_insert_temp = 1;
+				main_struct->temp_ref_user = temp_ref;
+				sleep(1);
+				wclear(windowEntradaUsuario);
+				break;
+			case 2:
+				wclear(windowEntradaUsuario);
+				main_struct->flag_insert_temp = 1;
+				mvwprintw(windowEntradaUsuario, 1, 1, "Valor Atualizado");
+				wrefresh(windowEntradaUsuario);
+				sleep(1);
+				wclear(windowEntradaUsuario);
+				break;
+			case 3:
+				main_struct->flag_run = 0;
+				wclear(windowEntradaUsuario);
+				echo();
+				nocbreak();
+				endwin();
+				break;
+			default:  
+				wclear(windowEntradaUsuario);
+				mvwprintw(windowEntradaUsuario, 1, 1, "Valor inválido, insira novamente.");
+				wrefresh(windowEntradaUsuario);
+				sleep(1);
+				wclear(windowEntradaUsuario);
+		}
 	}
-	wclear(windowEntradaUsuario);
-	printa_opcoes();
-	wrefresh(windowEntradaUsuario);
-	mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
 }
