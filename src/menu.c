@@ -9,7 +9,6 @@ void iniciaTelas()
 	initscr();
 	cbreak();
 	keypad(stdscr, TRUE);
-	curs_set(0);
 }
 
 void createImprimeDadosWindow()
@@ -72,7 +71,7 @@ void printa_opcoes()
 void opcoes_usuario()
 {
 	int option;
-	windowEntradaUsuario = newwin(5, 20, 6, 1);
+	windowEntradaUsuario = newwin(5, 50, 6, 1);
 	printa_opcoes();
 	mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
 
