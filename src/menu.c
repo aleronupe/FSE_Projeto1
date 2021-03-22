@@ -20,7 +20,7 @@ void iniciaTelas()
 
 void createImprimeDadosWindow()
 {
-	windowImprimeDados = newwin(5, 20, 1, 1);
+	windowImprimeDados = newwin(6, 40, 1, 1);
 	box(windowImprimeDados, 0, 0);
 	wrefresh(windowImprimeDados);
 }
@@ -72,28 +72,28 @@ void imprimeDados(Arg_Struct *main_struct)
 			wattroff(windowImprimeDados, COLOR_PAIR(5));
 
 			wattron(windowImprimeDados, COLOR_PAIR(1));
-			mvwprintw(windowImprimeDados, 5, 1, "VENTOINHA(OFF)");
+			mvwprintw(windowImprimeDados, 5, 1, "Ventoinha (OFF)");
 			wattroff(windowImprimeDados, COLOR_PAIR(1));
 		}
 		else if (main_struct->intensity < -40.0)
 		{
 			wattron(windowImprimeDados, COLOR_PAIR(1));
-			mvwprintw(windowImprimeDados, 4, 1, "Resistor(OFF)");
+			mvwprintw(windowImprimeDados, 4, 1, "Resistor (OFF)");
 			wattroff(windowImprimeDados, COLOR_PAIR(1));
 
-			wattron(windowImprimeDados, COLOR_PAIR(1));
-			mvwprintw(windowImprimeDados, 5, 1, "VENTOINHA(OFF): %3.2lf", (-1)*intensity);
-			wattroff(windowImprimeDados, COLOR_PAIR(1));
+			wattron(windowImprimeDados, COLOR_PAIR(5));
+			mvwprintw(windowImprimeDados, 5, 1, "Ventoinha (ON): %3.2lf", (-1)*intensity);
+			wattroff(windowImprimeDados, COLOR_PAIR(5));
 		}
 		else
 		{
 			wattron(windowImprimeDados, COLOR_PAIR(1));
-			mvwprintw(windowImprimeDados, 4, 1, "Resistor(OFF)");
+			mvwprintw(windowImprimeDados, 4, 1, "Resistor (OFF)");
 			wattroff(windowImprimeDados, COLOR_PAIR(1));
 
-			wattron(windowImprimeDados, COLOR_PAIR(5));
-			mvwprintw(windowImprimeDados, 5, 1, "VENTOINHA(ON): %3.2lf", (-1)*intensity);
-			wattroff(windowImprimeDados, COLOR_PAIR(5));
+			wattron(windowImprimeDados, COLOR_PAIR(1));
+			mvwprintw(windowImprimeDados, 5, 1, "Ventoinha (ON): %3.2lf", (-1)*intensity);
+			wattroff(windowImprimeDados, COLOR_PAIR(1));
 		}
 
 		wrefresh(windowImprimeDados);
@@ -113,10 +113,11 @@ void atualiza_temperaturas(void *args)
 
 void printa_opcoes()
 {
-	imprimirRotulo(windowEntradaUsuario, 1, 1, "Escolha uma opção:");
-	imprimirRotulo(windowEntradaUsuario, 2, 1, "1 - Inserir TR:");
-	imprimirRotulo(windowEntradaUsuario, 3, 1, "2 - Utilizar TR do Potenciômetro:");
-	imprimirRotulo(windowEntradaUsuario, 4, 1, "3 - Sair");
+	imprimirRotulo(windowEntradaUsuario, 1, 1, "");
+	imprimirRotulo(windowEntradaUsuario, 2, 1, "Escolha uma opção:");
+	imprimirRotulo(windowEntradaUsuario, 3, 1, "1 - Inserir TR:");
+	imprimirRotulo(windowEntradaUsuario, 4, 1, "2 - Utilizar TR do Potenciômetro:");
+	imprimirRotulo(windowEntradaUsuario, 5, 1, "3 - Sair");
 	wrefresh(windowEntradaUsuario);
 }
 
@@ -124,14 +125,14 @@ void opcoes_usuario(Arg_Struct *main_struct)
 {
 	int option;
 	float temp_ref;
-	windowEntradaUsuario = newwin(5, 50, 6, 1);
+	windowEntradaUsuario = newwin(10, 50, 6, 1);
 
 	while (main_struct->flag_run)
 	{
 		int invalid_temp = 1;
 		printa_opcoes();
 		echo();
-		wmove(windowEntradaUsuario, 8, 1);
+		wmove(windowEntradaUsuario, 6, 1);
 		wscanw(windowEntradaUsuario, "%d", &option);
 		// mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
 		// mvwprintw(windowEntradaUsuario, 6, 1, "%d", option);
@@ -142,12 +143,14 @@ void opcoes_usuario(Arg_Struct *main_struct)
 			while (invalid_temp)
 			{
 				wclear(windowEntradaUsuario);
-				imprimirRotulo(windowEntradaUsuario, 1, 1, "Digite a Temperatura de Referência:");
-				wmove(windowEntradaUsuario, 2, 1);
+				imprimirRotulo(windowEntradaUsuario, 2, 1, "Digite a Temperatura de Referência:");
+				wmove(windowEntradaUsuario, 4, 1);
 				wscanw(windowEntradaUsuario, "%f", &temp_ref);
 				if (temp_ref > 100 || temp_ref < main_struct->temp_ext)
 				{
-					imprimirRotulo(windowEntradaUsuario, 2, 1, "Temperatura inválida");
+					wclear(windowEntradaUsuario);
+					imprimirRotulo(windowEntradaUsuario, 3, 1, "Temperatura inválida");
+					wrefresh(windowEntradaUsuario);
 				}
 				else
 				{
@@ -162,7 +165,7 @@ void opcoes_usuario(Arg_Struct *main_struct)
 		case 2:
 			wclear(windowEntradaUsuario);
 			main_struct->flag_insert_temp = 0;
-			mvwprintw(windowEntradaUsuario, 1, 1, "Valor Atualizado");
+			mvwprintw(windowEntradaUsuario, 3, 1, "Valor Atualizado");
 			wrefresh(windowEntradaUsuario);
 			sleep(1);
 			wclear(windowEntradaUsuario);
@@ -176,7 +179,7 @@ void opcoes_usuario(Arg_Struct *main_struct)
 			break;
 		default:
 			wclear(windowEntradaUsuario);
-			mvwprintw(windowEntradaUsuario, 1, 1, "Valor inválido, insira novamente.");
+			mvwprintw(windowEntradaUsuario, 3, 1, "Valor inválido, insira novamente.");
 			wrefresh(windowEntradaUsuario);
 			sleep(1);
 			wclear(windowEntradaUsuario);
