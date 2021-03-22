@@ -1,4 +1,5 @@
 #include "user.h"
+#include <unistd.h>
 
 WINDOW *windowEntradaUsuario;
 
@@ -20,12 +21,12 @@ void opcoes_usuario()
 
     if (option < 1 || option > 3)
     {
-        wclear(windowImprimeDados);
+        wclear(windowEntradaUsuario);
         mvwprintw(windowEntradaUsuario, 1, 1, "Valor inválido, insira novamente.");
         wrefresh(windowEntradaUsuario);
-        sleep(1)
+        sleep(1);
     }
-    wclear(windowImprimeDados);
+    wclear(windowEntradaUsuario);
     printa_opcoes();
     wrefresh(windowEntradaUsuario);
     mvwscanw(windowEntradaUsuario, 5, 1, "%d", &option);
