@@ -19,23 +19,19 @@ void configura_GPIO()
 
 void ativa_circuito_de_potencia(int intensity)
 {
-    printf("Intensity: %d\n", intensity);
     if (intensity > 0)
     {
         softPwmWrite(PWM_PIN_VENT, 0);
         softPwmWrite(PWM_PIN_RES, abs(intensity));
-        printf("Resistência Ligada\n");
     }
     else if (intensity <= -40)
     {
 
         softPwmWrite(PWM_PIN_RES, 0);
         softPwmWrite(PWM_PIN_VENT, abs(intensity));
-        printf("Ventoinha Ligada\n");
     }
     else
     {
-        printf("Nenhum Ligado\n");
         softPwmWrite(PWM_PIN_VENT, 0);
         softPwmWrite(PWM_PIN_RES, 0);
     }
@@ -45,9 +41,7 @@ void desativa_circuito_de_potencia()
 {
     softPwmWrite(PWM_PIN_VENT, 0);
     usleep(500000);
-    printf("Desligou a Ventoinha");
 
     softPwmWrite(PWM_PIN_RES, 0);
     usleep(500000);
-    printf("Desligou o Resistor");
 }

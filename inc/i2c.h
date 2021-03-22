@@ -118,6 +118,6 @@ void configura_bme280_i2c(struct bme280_dev *dev);
  * @param[in] temp_amb   :   Pointer to structure that keeps environment temperature.
  *
  */
-int8_t le_temp_bme280_i2c(struct bme280_dev *dev, double *temp_amb);
+double le_temp_bme280_i2c(struct bme280_dev *dev);
 
 #endif /* I2C_H_ */

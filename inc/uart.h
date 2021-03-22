@@ -7,6 +7,6 @@ void monta_uart(int uart0_filestream);
 
 int confere_crc(unsigned char *rx_buffer, int rx_length);
 
-void le_temperatura(int uart0_filestream, unsigned char sub_cod, float *temp);
+float le_temperatura(int uart0_filestream, unsigned char sub_cod);
 
 #endif /* UART_H_ */

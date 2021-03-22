@@ -176,8 +176,10 @@ void configura_bme280_i2c(struct bme280_dev *dev)
 /*!
  * @brief This function start the read of the I2C connection
  */
-int8_t le_temp_bme280_i2c(struct bme280_dev *dev, double *temp_amb)
+double le_temp_bme280_i2c(struct bme280_dev *dev)
 {
+    double temp_amb;
+
     /* Variable to define the result */
     int8_t rslt = BME280_OK;
 
@@ -209,7 +211,7 @@ int8_t le_temp_bme280_i2c(struct bme280_dev *dev, double *temp_amb)
     {
         fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
     }
-    *temp_amb = comp_data.temperature;
-    print_sensor_data(&comp_data);
-    return rslt;
+    temp_amb = comp_data.temperature;
+    // print_sensor_data(&comp_data);
+    return temp_amb;
 }
